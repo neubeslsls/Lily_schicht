@@ -3,69 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lilyplaner</title>
+    <title>Lilys_Planer</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2>Liste der Abwesenheiten</h2>
+<header>
+    <h1>Lilys_Planer</h1>
+</header>
 
-<div class="abwesenheit-box">
-    <input id="abwesenheitName" placeholder="Name">
-    <input id="abwesenheitDatum" type="date">
-    <input id="abwesenheitGrund" placeholder="Grund (Freitext)">
-    <button onclick="addAbwesenheit()">Hinzufügen</button>
+<main>
+
+    <!-- Mitarbeiterliste -->
+    <section id="mitarbeiter-section">
+        <h2>Mitarbeiter</h2>
+        <div id="mitarbeiter-grid"></div>
+        <button id="add-mitarbeiter-btn">+ Mitarbeiter hinzufügen</button>
+    </section>
+
+    <!-- Abwesenheiten -->
+    <section id="abwesenheit-section">
+        <h2>Abwesenheiten</h2>
+
+        <label>Mitarbeiter wählen:</label>
+        <select id="abwesenheit-mitarbeiter"></select>
+
+        <div>
+            <label>Abwesend von:</label>
+            <input type="date" id="abwesenheit-von">
+
+            <label>bis:</label>
+            <input type="date" id="abwesenheit-bis">
+
+            <button id="abwesenheit-hinzufuegen">+ Abwesenheit hinzufügen</button>
+        </div>
+
+        <h3>Liste der Abwesenheiten</h3>
+        <ul id="abwesenheit-liste"></ul>
+    </section>
+
+    <!-- Wochenpläne -->
+    <section id="wochenplan">
+        <h2>4‑Wochen‑Plan</h2>
+        <div id="wochen-container"></div>
+    </section>
+
+    <!-- Button zum Speichern als Bild -->
+    <button id="save-plan-btn" class="save-btn">Plan als Bild speichern</button>
+
+</main>
+
+<!-- Popup für Mitarbeiter-Auswahl -->
+<div id="popup" class="hidden">
+    <div id="popup-content">
+        <h3>Mitarbeiter auswählen</h3>
+        <div id="popup-list"></div>
+        <button id="popup-close">Schließen</button>
+    </div>
 </div>
 
-<div id="abwesenheitenListe"></div>
-
-<hr>
-
-<h2>4‑Wochen‑Plan</h2>
-
-<div class="woche">
-    <h3>Woche 1</h3>
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Montag</th>
-            <th>Dienstag</th>
-            <th>Mittwoch</th>
-        </tr>
-
-        <tr>
-            <td>Frühschicht</td>
-            <td><button class="add-btn" onclick="addShift(1, 'frueh')">+</button></td>
-            <td><button class="add-btn" onclick="addShift(2, 'frueh')">+</button></td>
-            <td><button class="add-btn" onclick="addShift(3, 'frueh')">+</button></td>
-        </tr>
-
-        <tr>
-            <td>Service</td>
-            <td><button class="add-btn">+</button></td>
-            <td><button class="add-btn">+</button></td>
-            <td><button class="add-btn">+</button></td>
-        </tr>
-
-        <tr>
-            <td>Telefon</td>
-            <td><button class="add-btn">+</button></td>
-            <td><button class="add-btn">+</button></td>
-            <td><button class="add-btn">+</button></td>
-        </tr>
-
-        <tr>
-            <td>Belegung</td>
-            <td><button class="add-btn">+</button></td>
-            <td><button class="add-btn">+</button></td>
-            <td><button class="add-btn">+</button></td>
-        </tr>
-    </table>
-</div>
-
+<!-- html2canvas für Screenshot -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
-
-
-
