@@ -35,6 +35,11 @@ function renderMitarbeiter() {
     grid.innerHTML = "";
 
     mitarbeiter.forEach((name, index) => {
+        const wrapper = document.createElement("div");
+        wrapper.style.display = "flex";
+        wrapper.style.alignItems = "center";
+        wrapper.style.gap = "6px";
+
         const btn = document.createElement("button");
         btn.className = "mitarbeiter-btn";
         btn.textContent = name;
@@ -45,8 +50,14 @@ function renderMitarbeiter() {
             e.dataTransfer.setData("text/plain", name);
         });
 
-        btn.addEventListener("contextmenu", (e) => {
-            e.preventDefault();
+        const remove = document.createElement("span");
+        remove.textContent = "x";
+        remove.style.color = "red";
+        remove.style.cursor = "pointer";
+        remove.style.fontWeight = "bold";
+        remove.style.fontSize = "18px";
+
+        remove.addEventListener("click", () => {
             if (confirm(`${name} löschen?`)) {
                 mitarbeiter.splice(index, 1);
                 saveMitarbeiter();
@@ -55,7 +66,9 @@ function renderMitarbeiter() {
             }
         });
 
-        grid.appendChild(btn);
+        wrapper.appendChild(btn);
+        wrapper.appendChild(remove);
+        grid.appendChild(wrapper);
     });
 
     updateAbwesenheitDropdown();
@@ -301,7 +314,13 @@ function addNameToSlot(slot, name) {
 document.getElementById("save-plan-btn").addEventListener("click", () => {
     const plan = document.getElementById("wochenplan");
 
-    html2canvas(plan, { scale: 2 }).then(canvas => {
+    html2canvas(plan, {
+        scale: 2,
+        scrollX: 0,
+        scrollY: -window.scrollY,
+        windowWidth: plan.scrollWidth,
+        windowHeight: plan.scrollHeight
+    }).then(canvas => {
         const link = document.createElement("a");
         link.download = "Schichtplan.png";
         link.href = canvas.toDataURL("image/png");
