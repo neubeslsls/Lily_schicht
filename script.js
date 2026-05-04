@@ -1,43 +1,318 @@
-let abwesenheiten = [];
+/* ===========================
+   Daten
+=========================== */
 
-// Abwesenheit hinzufügen
-function addAbwesenheit() {
-    const name = document.getElementById("abwesenheitName").value;
-    const datum = document.getElementById("abwesenheitDatum").value;
-    const grund = document.getElementById("abwesenheitGrund").value;
+let mitarbeiter = JSON.parse(localStorage.getItem("mitarbeiter")) || [];
+let abwesenheiten = JSON.parse(localStorage.getItem("abwesenheiten")) || [];
+let farbMap = JSON.parse(localStorage.getItem("farbMap")) || {};
 
-    if (!name || !datum || !grund) {
-        alert("Bitte Name, Datum und Grund eingeben.");
-        return;
+let aktuellerSlot = null;
+
+const farben = [
+    "#ffeb3b", "#8bc34a", "#03a9f4", "#e91e63",
+    "#ff9800", "#9c27b0", "#009688", "#f44336"
+];
+
+/* ===========================
+   Farben
+=========================== */
+
+function getFarbe(name) {
+    if (!farbMap[name]) {
+        const index = Object.keys(farbMap).length % farben.length;
+        farbMap[name] = farben[index];
+        localStorage.setItem("farbMap", JSON.stringify(farbMap));
     }
-
-    abwesenheiten.push({ name, datum, grund });
-    updateAbwesenheiten();
+    return farbMap[name];
 }
 
-// Abwesenheit löschen
-function removeAbwesenheit(index) {
-    abwesenheiten.splice(index, 1);
-    updateAbwesenheiten();
+/* ===========================
+   Mitarbeiter
+=========================== */
+
+function renderMitarbeiter() {
+    const grid = document.getElementById("mitarbeiter-grid");
+    grid.innerHTML = "";
+
+    mitarbeiter.forEach((name, index) => {
+        const btn = document.createElement("button");
+        btn.className = "mitarbeiter-btn";
+        btn.textContent = name;
+        btn.style.background = getFarbe(name);
+        btn.draggable = true;
+
+        btn.addEventListener("dragstart", (e) => {
+            e.dataTransfer.setData("text/plain", name);
+        });
+
+        btn.addEventListener("contextmenu", (e) => {
+            e.preventDefault();
+            if (confirm(`${name} löschen?`)) {
+                mitarbeiter.splice(index, 1);
+                saveMitarbeiter();
+                renderMitarbeiter();
+                updateAbwesenheitDropdown();
+            }
+        });
+
+        grid.appendChild(btn);
+    });
+
+    updateAbwesenheitDropdown();
 }
 
-// Abwesenheiten anzeigen
-function updateAbwesenheiten() {
-    const list = document.getElementById("abwesenheitenListe");
-    list.innerHTML = "";
+document.getElementById("add-mitarbeiter-btn").addEventListener("click", () => {
+    const name = prompt("Name des Mitarbeiters:");
+    if (name) {
+        mitarbeiter.push(name);
+        saveMitarbeiter();
+        renderMitarbeiter();
+    }
+});
 
-    abwesenheiten.forEach((eintrag, index) => {
-        const item = document.createElement("div");
-        item.className = "abwesenheit-item";
-        item.innerHTML = `
-            ${eintrag.name} – ${eintrag.datum} – ${eintrag.grund}
-            <button class="remove-btn" onclick="removeAbwesenheit(${index})">X</button>
-        `;
-        list.appendChild(item);
+function saveMitarbeiter() {
+    localStorage.setItem("mitarbeiter", JSON.stringify(mitarbeiter));
+}
+
+/* ===========================
+   Abwesenheiten
+=========================== */
+
+function updateAbwesenheitDropdown() {
+    const select = document.getElementById("abwesenheit-mitarbeiter");
+    select.innerHTML = "";
+
+    mitarbeiter.forEach(name => {
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+        select.appendChild(opt);
     });
 }
 
-// Dummy-Funktion für Frühschicht (kann später erweitert werden)
-function addShift(tag, art) {
-    alert("Frühschicht hinzugefügt für Tag " + tag);
+document.getElementById("abwesenheit-hinzufuegen").addEventListener("click", () => {
+    const name = document.getElementById("abwesenheit-mitarbeiter").value;
+    const von = document.getElementById("abwesenheit-von").value;
+    const bis = document.getElementById("abwesenheit-bis").value;
+    const grund = prompt("Grund der Abwesenheit (Freitext):");
+
+    if (!name || !von || !bis || !grund) {
+        alert("Bitte Mitarbeiter, Datum und Grund eingeben.");
+        return;
+    }
+
+    abwesenheiten.push({ name, von, bis, grund });
+    saveAbwesenheiten();
+    renderAbwesenheiten();
+});
+
+function renderAbwesenheiten() {
+    const liste = document.getElementById("abwesenheit-liste");
+    liste.innerHTML = "";
+
+    abwesenheiten.forEach((a, index) => {
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+            ${a.name} – ${a.von} bis ${a.bis} – ${a.grund}
+            <button class="remove-btn" data-index="${index}">X</button>
+        `;
+
+        li.querySelector(".remove-btn").addEventListener("click", () => {
+            abwesenheiten.splice(index, 1);
+            saveAbwesenheiten();
+            renderAbwesenheiten();
+        });
+
+        liste.appendChild(li);
+    });
 }
+
+function saveAbwesenheiten() {
+    localStorage.setItem("abwesenheiten", JSON.stringify(abwesenheiten));
+}
+
+/* ===========================
+   4‑Wochen‑Tabellen
+=========================== */
+
+function createWeekTables() {
+    const container = document.getElementById("wochen-container");
+    container.innerHTML = "";
+
+    const tage = ["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"];
+
+    for (let w = 1; w <= 4; w++) {
+        const div = document.createElement("div");
+        div.className = "woche";
+
+        div.innerHTML = `
+            <h2>Woche ${w}</h2>
+            <label>Datum von: <input type="date"></label>
+            <label>bis: <input type="date"></label>
+
+            <table>
+                <tr>
+                    <th>Name</th>
+                    ${tage.map(t => `<th>${t}</th>`).join("")}
+                </tr>
+
+                ${createMitarbeiterRow(tage)}
+                ${createBlockRow("Service", tage)}
+                ${createBlockRow("Telefon", tage)}
+                ${createBlockRow("Belegung", tage)}
+            </table>
+        `;
+
+        container.appendChild(div);
+    }
+
+    enableDragAndDrop();
+    enablePlusButtons();
+}
+
+function createMitarbeiterRow(tage) {
+    return `
+        <tr>
+            <td class="block-title">Mitarbeiter</td>
+            ${tage.map(() => `
+                <td>
+                    <div class="mitarbeiter-slot">
+
+                        <div class="mitarbeiter-frueh schicht-slot">
+                            <div class="schicht-label">Frühschicht</div>
+                            <div class="namen"></div>
+                            <button class="add-btn">+</button>
+                        </div>
+
+                    </div>
+                </td>
+            `).join("")}
+        </tr>
+    `;
+}
+
+function createBlockRow(titel, tage) {
+    return `
+        <tr>
+            <td class="block-title">${titel}</td>
+            ${tage.map(() => `
+                <td>
+                    <div class="schicht-slot">
+                        <div class="namen"></div>
+                        <button class="add-btn">+</button>
+                    </div>
+                </td>
+            `).join("")}
+        </tr>
+    `;
+}
+
+/* ===========================
+   Drag & Drop
+=========================== */
+
+function enableDragAndDrop() {
+    const slots = document.querySelectorAll(".schicht-slot");
+
+    slots.forEach(slot => {
+        slot.addEventListener("dragover", (e) => {
+            e.preventDefault();
+        });
+
+        slot.addEventListener("drop", (e) => {
+            e.preventDefault();
+            const name = e.dataTransfer.getData("text/plain");
+            if (!name) return;
+            addNameToSlot(slot, name);
+        });
+    });
+}
+
+/* ===========================
+   Plus-Buttons
+=========================== */
+
+function enablePlusButtons() {
+    const buttons = document.querySelectorAll(".add-btn");
+
+    buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            aktuellerSlot = btn.parentElement;
+            openPopup();
+        });
+    });
+}
+
+/* ===========================
+   Popup
+=========================== */
+
+function openPopup() {
+    const popup = document.getElementById("popup");
+    const list = document.getElementById("popup-list");
+
+    list.innerHTML = "";
+
+    mitarbeiter.forEach(name => {
+        const btn = document.createElement("button");
+        btn.textContent = name;
+        btn.style.background = getFarbe(name);
+
+        btn.addEventListener("click", () => {
+            addNameToSlot(aktuellerSlot, name);
+        });
+
+        list.appendChild(btn);
+    });
+
+    popup.classList.remove("hidden");
+}
+
+document.getElementById("popup-close").addEventListener("click", () => {
+    document.getElementById("popup").classList.add("hidden");
+});
+
+/* ===========================
+   Namen einfügen
+=========================== */
+
+function addNameToSlot(slot, name) {
+    const namenBox = slot.querySelector(".namen");
+
+    const tag = document.createElement("div");
+    tag.className = "name-tag";
+    tag.style.background = getFarbe(name);
+    tag.style.color = "black";
+
+    tag.innerHTML = `${name} <span>x</span>`;
+
+    tag.querySelector("span").addEventListener("click", () => {
+        tag.remove();
+    });
+
+    namenBox.appendChild(tag);
+}
+
+/* ===========================
+   Plan als Bild speichern
+=========================== */
+
+document.getElementById("save-plan-btn").addEventListener("click", () => {
+    const plan = document.getElementById("wochenplan");
+
+    html2canvas(plan, { scale: 2 }).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "Schichtplan.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+    });
+});
+
+/* ===========================
+   Start
+=========================== */
+
+renderMitarbeiter();
+renderAbwesenheiten();
+createWeekTables();
