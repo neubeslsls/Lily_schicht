@@ -1,0 +1,8 @@
+{
+    "name": "Lilys_Planer",
+    "short_name": "Planer",
+    "start_url": "index.html",
+    "display": "standalone",
+    "background_color": "#cfe8ff",
+    "theme_color": "#4a90e2"
+}
