@@ -14,6 +14,16 @@ const farben = [
 ];
 
 /* ===========================
+   Datum formatieren TT.MM.JJ
+=========================== */
+
+function formatDateShort(isoDate) {
+    if (!isoDate) return "";
+    const [year, month, day] = isoDate.split("-");
+    return `${day}.${month}.${year.slice(2)}`;
+}
+
+/* ===========================
    Farben
 =========================== */
 
@@ -127,7 +137,7 @@ function renderAbwesenheiten() {
         const li = document.createElement("li");
 
         li.innerHTML = `
-            ${a.name} – ${a.von} bis ${a.bis} – ${a.grund}
+            ${a.name} – ${formatDateShort(a.von)} bis ${formatDateShort(a.bis)} – ${a.grund}
             <button class="remove-btn" data-index="${index}">X</button>
         `;
 
@@ -161,8 +171,18 @@ function createWeekTables() {
 
         div.innerHTML = `
             <h2>Woche ${w}</h2>
-            <label>Datum von: <input type="date"></label>
-            <label>bis: <input type="date"></label>
+
+            <div class="datum-box">
+                <label>Datum von:
+                    <input type="date" class="datum-von" data-week="${w}">
+                </label>
+
+                <label>bis:
+                    <input type="date" class="datum-bis" data-week="${w}">
+                </label>
+
+                <span class="datum-anzeige" id="datum-anzeige-${w}"></span>
+            </div>
 
             <table>
                 <tr>
@@ -180,8 +200,32 @@ function createWeekTables() {
         container.appendChild(div);
     }
 
+    // Datum aktualisieren
+    const vonInputs = document.querySelectorAll(".datum-von");
+    const bisInputs = document.querySelectorAll(".datum-bis");
+
+    vonInputs.forEach(input => {
+        input.addEventListener("change", () => updateWeekDate(input.dataset.week));
+    });
+    bisInputs.forEach(input => {
+        input.addEventListener("change", () => updateWeekDate(input.dataset.week));
+    });
+
     enableDragAndDrop();
     enablePlusButtons();
+}
+
+function updateWeekDate(week) {
+    const von = document.querySelector(`.datum-von[data-week="${week}"]`).value;
+    const bis = document.querySelector(`.datum-bis[data-week="${week}"]`).value;
+
+    const span = document.getElementById(`datum-anzeige-${week}`);
+
+    if (von && bis) {
+        span.textContent = `${formatDateShort(von)} – ${formatDateShort(bis)}`;
+    } else {
+        span.textContent = "";
+    }
 }
 
 function createMitarbeiterRow(tage) {
