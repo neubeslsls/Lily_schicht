@@ -2,9 +2,15 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+
+    <!-- AUTOMATISCHE VERSIONIERUNG / CACHE-BYPASS -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lilys_Planer</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=1">
 </head>
 <body>
 
@@ -62,8 +68,14 @@
     </div>
 </div>
 
-<!-- html2canvas für Screenshot -->
+<!-- html2canvas -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="script.js"></script>
+
+<!-- AUTOMATISCHE VERSIONIERUNG FÜR SCRIPT -->
+<script>
+    const version = Date.now();
+    document.write(`<script src="script.js?v=${version}"><\/script>`);
+</script>
+
 </body>
 </html>
