@@ -1,172 +1,49 @@
 body {
     font-family: Arial, sans-serif;
-    background: #cfe8ff;
-    margin: 0;
-}
-
-header {
-    background: #4a90e2;
     padding: 20px;
-    text-align: center;
-    color: white;
-}
-
-section {
-    padding: 20px;
-}
-
-#mitarbeiter-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.mitarbeiter-btn {
-    color: black;
-    border: none;
-    padding: 10px;
-    border-radius: 6px;
-    cursor: grab;
-}
-
-.woche {
-    background: white;
-    padding: 15px;
-    margin-bottom: 30px;
-    border-radius: 8px;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 15px;
+    margin-bottom: 20px;
 }
 
 th, td {
-    border: 1px solid #aaa;
-    padding: 6px;
+    border: 1px solid #ccc;
+    padding: 8px;
     text-align: center;
 }
 
-.block-title {
-    background: #e3f0ff;
-    font-weight: bold;
-}
-
-/* Mitarbeiter-Zelle mit Früh/Spät */
-.mitarbeiter-slot {
-    display: flex;
-    flex-direction: column;
-    border: 2px solid #4a90e2;
+.add-btn {
+    background: #4da3ff;
+    color: white;
+    border: none;
+    padding: 6px 10px;
     border-radius: 6px;
-    overflow: hidden;
+    cursor: pointer;
 }
 
-/* Frühschicht */
-.mitarbeiter-frueh {
-    background: white;
-    padding: 4px;
-    min-height: 55px;
-    border-bottom: 2px solid #4a90e2;
+.abwesenheit-box input {
+    margin: 4px;
+    padding: 6px;
 }
 
-/* Spätschicht */
-.mitarbeiter-spaet {
-    background: #f2f2f2;
-    padding: 4px;
-    min-height: 55px;
-}
-
-.schicht-label {
-    font-size: 12px;
-    font-weight: bold;
-    color: #4a90e2;
-    margin-bottom: 3px;
-}
-
-.namen {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
-
-.name-tag {
-    padding: 4px 6px;
-    border-radius: 4px;
-    font-size: 14px;
+.abwesenheit-item {
+    padding: 8px;
+    margin: 6px 0;
+    background: #e8f0ff;
+    border-radius: 6px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.name-tag span {
-    cursor: pointer;
-    color: red;
-    margin-left: 6px;
-}
-
-.add-btn {
-    background: #4a90e2;
+.remove-btn {
+    background: #ff4d4d;
     color: white;
     border: none;
+    padding: 4px 8px;
     border-radius: 4px;
-    width: 28px;
-    height: 28px;
-    cursor: pointer;
-    font-size: 18px;
-    margin-top: 4px;
-}
-
-/* Popup */
-#popup {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#popup.hidden {
-    display: none;
-}
-
-#popup-content {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 300px;
-}
-
-#popup-list button {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 6px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    color: black;
-}
-
-/* Speichern-Button */
-.save-btn {
-    width: 90%;
-    margin: 20px auto;
-    display: block;
-    padding: 15px;
-    font-size: 18px;
-    background: #4a90e2;
-    color: white;
-    border: none;
-    border-radius: 10px;
     cursor: pointer;
 }
-
-.save-btn:active {
-    background: #3a78c0;
-}
-
-
